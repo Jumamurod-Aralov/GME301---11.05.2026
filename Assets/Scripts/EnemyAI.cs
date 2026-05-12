@@ -4,22 +4,22 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     private NavMeshAgent agent;
-    [SerializeField] private Transform startPoint;
     [SerializeField] private Transform endPoint;
 
-    void Start()
+    void OnEnable()
     {
-        transform.position = startPoint.position;
         agent = GetComponent<NavMeshAgent>();
+        if (endPoint == null)
+            endPoint = GameObject.Find("EndPoint").transform;
         agent.SetDestination(endPoint.position);
     }
 
     void Update()
     {
-        // Check if reached end point
+        // CHANGED: Removed velocity check
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
-            gameObject.SetActive(false); // Disable for now
+            SpawnManager.Instance.ReturnEnemyToPool(gameObject);
         }
     }
 }
