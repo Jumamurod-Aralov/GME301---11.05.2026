@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1542922985848115032}
   - component: {fileID: 2916451128433381430}
   - component: {fileID: 3656182620309139064}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Enemy_AI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,4 +146,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af3cf9bc299c7504182f23d6e0ad8e8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endPoint: {fileID: 7892783429262995056, guid: d10b34484002877448a85e8b0b66d1ee, type: 3}
+  endPoint: {fileID: 3989954685459777037, guid: d10b34484002877448a85e8b0b66d1ee, type: 3}
+  currentState: 0
+  runStateColor: {r: 0.9, g: 1, b: 0.5, a: 1}
+  hideStateColor: {r: 0, g: 0, b: 1, a: 1}
+  deathStateColor: {r: 1, g: 1, b: 1, a: 1}
+  hideRandomMin: 1
+  hideRandomMax: 3
+  hideStopDistance: 0.5
+  maxHides: 2
+  pointsOnDeath: 50
+  cooldownMin: 5
+  cooldownMax: 7
