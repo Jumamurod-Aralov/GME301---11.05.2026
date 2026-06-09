@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public enum AIState { RunState, HideState, DeathState }
 
@@ -19,13 +20,12 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float hideRandomMin = 1f;
     [SerializeField] private float hideRandomMax = 3f;
     private float hideRandomDuration = 0f;
-    private float deathTimer = 0f;
 
     [SerializeField] private float hideStopDistance = 0.5f;
     private Transform selectedHideSpot = null;
     private int hideCount = 0;
     [SerializeField] private int maxHides = 2;
-    [SerializeField] private int pointsOnDeath = 50; // CHANGED: Death points
+    [SerializeField] private int pointsOnDeath = 50;
 
     private float cooldownTimer = 0f;
     [SerializeField] private float cooldownMin = 5f;
@@ -33,14 +33,21 @@ public class EnemyAI : MonoBehaviour
     private float cooldownDuration = 0f;
     private bool inCooldown = false;
 
+    private bool _deathTriggered = false;
+
+    private Animator _animator;
+
     void OnEnable()
     {
         agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponent<Animator>();
+        meshRenderer = GetComponent<Renderer>();
+
+        if (meshRenderer != null)
+            material = meshRenderer.material;
+
         if (endPoint == null)
             endPoint = GameObject.Find("EndPoint").transform;
-
-        meshRenderer = GetComponent<Renderer>();
-        material = meshRenderer.material;
 
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb == null)
@@ -56,9 +63,9 @@ public class EnemyAI : MonoBehaviour
         hideCount = 0;
         selectedHideSpot = null;
         hideTimer = 0f;
-        deathTimer = 0f;
         cooldownTimer = 0f;
         inCooldown = false;
+        _deathTriggered = false;
     }
 
     void Update()
@@ -75,12 +82,13 @@ public class EnemyAI : MonoBehaviour
                 HandleDeathState();
                 break;
         }
-
-        UpdateColorBySpeed();
     }
 
     void HandleRunState()
     {
+        if (_animator != null)
+            _animator.SetFloat("Speed", agent.velocity.magnitude); // UPDATE ANIMATOR SPEED
+
         if (inCooldown)
         {
             cooldownTimer += Time.deltaTime;
@@ -128,6 +136,9 @@ public class EnemyAI : MonoBehaviour
                 agent.isStopped = true;
                 agent.ResetPath();
 
+                if (_animator != null)
+                    _animator.SetFloat("Speed", 0); // IDLE only when stopped
+
                 hideTimer += Time.deltaTime;
 
                 if (hideTimer >= hideRandomDuration)
@@ -148,47 +159,39 @@ public class EnemyAI : MonoBehaviour
                     SetState(AIState.RunState);
                 }
             }
+            else
+            {
+                if (_animator != null)
+                    _animator.SetFloat("Speed", agent.velocity.magnitude); // RUNNING to hide spot
+            }
         }
     }
 
     void HandleDeathState()
     {
         agent.enabled = false;
-        deathTimer += Time.deltaTime;
 
-        // CHANGED: Award points immediately
-        if (deathTimer < 0.1f)
+        if (!_deathTriggered)
         {
-            GameManager.Instance.AddScore(pointsOnDeath);
-            // TODO: Trigger death animation here
+            _deathTriggered = true;
+
+            if (_animator != null)
+                _animator.SetTrigger("Death");
+
+            if (GameManager.Instance != null)
+                GameManager.Instance.AddScore(pointsOnDeath);
+
             Debug.Log($"Enemy died! +{pointsOnDeath} points");
-        }
 
-        if (deathTimer >= 3f)
-        {
-            SpawnManager.Instance.ReturnEnemyToPool(gameObject);
-            deathTimer = 0f;
-            agent.enabled = true;
+            StartCoroutine(WaitForDeathAnimation());
         }
     }
 
-    // CHANGED: Color based on speed
-    void UpdateColorBySpeed()
+    IEnumerator WaitForDeathAnimation()
     {
-        if (currentState == AIState.DeathState)
-        {
-            material.color = deathStateColor; // Red
-            return;
-        }
-
-        if (currentState == AIState.HideState && agent.isStopped)
-        {
-            material.color = hideStateColor; // Blue when stopped hiding
-            return;
-        }
-
-        // All other times = yellowish
-        material.color = runStateColor;
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(5f); // Wait for actual animation duration
+        SpawnManager.Instance.ReturnEnemyToPool(gameObject);
     }
 
     public void TakeDamage()

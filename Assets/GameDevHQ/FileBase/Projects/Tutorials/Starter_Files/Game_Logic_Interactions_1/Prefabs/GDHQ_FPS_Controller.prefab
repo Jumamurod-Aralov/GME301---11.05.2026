@@ -616,6 +616,7 @@ GameObject:
   - component: {fileID: 3522221881866731913}
   - component: {fileID: 3534858390546826023}
   - component: {fileID: 3559926251135889283}
+  - component: {fileID: 8595222750174243974}
   m_Layer: 0
   m_Name: GDHQ_FPS_Controller
   m_TagString: Untagged
@@ -695,3 +696,20 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8595222750174243974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3503760010013013579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeaa9db2aa1e3f84fb6f39e88c4964ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 3518291814107247131}
+  rayDistance: 1000
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 8
