@@ -6,6 +6,7 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float rayDistance = 1000f;
     [SerializeField] private LayerMask _shootLayer; // Enemy AI + Barrier
+    [SerializeField] private int _ammoCount = 30;
 
     void Start()
     {
@@ -21,7 +22,7 @@ public class PlayerShooter : MonoBehaviour
 
     void Update()
     {
-        // CHANGED: Shoot on left mouse click
+        // Shoot on left mouse click
         if (Input.GetMouseButtonDown(0))
         {
             Shoot();
@@ -30,7 +31,12 @@ public class PlayerShooter : MonoBehaviour
 
     void Shoot()
     {
-        // CHANGED: Raycast from screen center
+        if (!GameManager.Instance.IsGameActive()) return; // Check if game active
+
+        int ammo = UIManager.Instance.GetCurrentAmmo(); // Get Ammo From UI
+        if (_ammoCount <= 0) return;
+
+        // Raycast from screen center
         Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
 
         if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, _shootLayer))
@@ -45,5 +51,13 @@ public class PlayerShooter : MonoBehaviour
             if (barrier != null)
                 barrier.TakeDamage();
         }
+
+        _ammoCount--; // Reduce Ammo
+        UIManager.Instance.UpdateAmmo(_ammoCount);
+    }
+
+    public void ResetAmmo()
+    {
+        _ammoCount = 30;
     }
 }

@@ -121,6 +121,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (other.CompareTag("EndPoint") || other.name.Contains("EndPoint"))
         {
+            SpawnManager.Instance.EnemyEscaped();
             SpawnManager.Instance.ReturnEnemyToPool(gameObject);
         }
     }

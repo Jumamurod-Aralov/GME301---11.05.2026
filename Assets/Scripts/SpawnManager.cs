@@ -17,6 +17,8 @@ public class SpawnManager : MonoBehaviour
     private int activeEnemyCount = 0;
     private float spawnTimer = 0f;
 
+    private int _escapedEnemyCount = 0;
+
     void Awake()
     {
         // CHANGED: Singleton pattern
@@ -79,13 +81,19 @@ public class SpawnManager : MonoBehaviour
         return enemy;
     }
 
+    public void EnemyEscaped()
+    {
+        _escapedEnemyCount++;
+        UIManager.Instance.SetEscapedCount(_escapedEnemyCount);
+    }
+
     public void ReturnEnemyToPool(GameObject enemy)
     {
-        // CHANGED: Return to pool instead of destroy
+        // Return to pool instead of destroy
         enemy.SetActive(false);
         pooledEnemies.Enqueue(enemy);
         activeEnemyCount--;
     }
 
-    public int GetActiveEnemyCount() => activeEnemyCount;
+    public int GetActiveEnemyCount() => activeEnemyCount; 
 }
