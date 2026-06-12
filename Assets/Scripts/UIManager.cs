@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _timeRemainingText;
     [SerializeField] private TextMeshProUGUI _ammoText;
     [SerializeField] private Image _warningPanel;
-
+    [SerializeField] private Image _winLosePanel; // Add this for win/lose screen background
     [SerializeField] private TextMeshProUGUI _winLoseText; // Add this for win/lose messages
 
     private int _score = 0;
@@ -34,7 +34,10 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         _ammoText.text = $"Ammo: {_ammo}";
+        
         _warningPanel.enabled = false; // Ensure the warning panel is hidden at the start
+
+        _winLosePanel.enabled = false; // Ensure the win/lose panel is hidden at the start
     }
 
     public void UpdateScore(int points)
@@ -122,7 +125,13 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOver(bool isWin)
     {
+        _winLosePanel.enabled = true; // Show the panel background
         _winLoseText.text = isWin ? "You Won!" : "Game Over!";
-        _winLoseText.gameObject.SetActive(true);
+    }
+
+    public void HideGameOver()
+    {
+        _winLosePanel.enabled = false; // Hide the panel background
+        _winLoseText.text = ""; // Clear the text
     }
 }
