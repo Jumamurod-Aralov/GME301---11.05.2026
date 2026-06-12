@@ -121,6 +121,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (other.CompareTag("EndPoint") || other.name.Contains("EndPoint"))
         {
+            AudioManager.instance.PlayAICompleted(AudioManager.instance.aiCompleted);
             SpawnManager.Instance.EnemyEscaped();
             SpawnManager.Instance.ReturnEnemyToPool(gameObject);
         }
@@ -184,8 +185,14 @@ public class EnemyAI : MonoBehaviour
 
             Debug.Log($"Enemy died! +{pointsOnDeath} points");
 
+            Invoke(nameof(PlayDeathSound), 0.3f); // Delay death sound 300ms
             StartCoroutine(WaitForDeathAnimation());
         }
+    }
+
+    void PlayDeathSound()
+    {
+        AudioManager.instance.PlayAIDeath(AudioManager.instance.aiDeath);
     }
 
     IEnumerator WaitForDeathAnimation()

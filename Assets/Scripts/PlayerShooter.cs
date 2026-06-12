@@ -1,5 +1,6 @@
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerShooter : MonoBehaviour
 {
@@ -12,17 +13,12 @@ public class PlayerShooter : MonoBehaviour
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
+        _shootLayer = LayerMask.GetMask("Enemy", "Barrier","Column");
 
-        _shootLayer = LayerMask.GetMask("Enemy", "Barrier");
-
-        // Task - Player - 5th
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
-        // Shoot on left mouse click
         if (Input.GetMouseButtonDown(0))
         {
             Shoot();
@@ -31,10 +27,11 @@ public class PlayerShooter : MonoBehaviour
 
     void Shoot()
     {
-        if (!GameManager.Instance.IsGameActive()) return; // Check if game active
-
-        int ammo = UIManager.Instance.GetCurrentAmmo(); // Get Ammo From UI
+        if (!GameManager.Instance.IsGameActive()) return;
         if (_ammoCount <= 0) return;
+
+        // Play weapon fire ONCE per shot
+        AudioManager.instance.PlayWeaponFire(AudioManager.instance.weaponFire);
 
         // Raycast from screen center
         Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
@@ -43,16 +40,31 @@ public class PlayerShooter : MonoBehaviour
         {
             Debug.Log($"Hit: {hit.collider.name} on layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
 
+            // Check enemy
             EnemyAI enemy = hit.collider.GetComponent<EnemyAI>();
             if (enemy != null)
+            {
                 enemy.TakeDamage();
+                return;
+            }
 
+            // Check barrier
             Barrier barrier = hit.collider.GetComponent<Barrier>();
             if (barrier != null)
+            {
                 barrier.TakeDamage();
+                AudioManager.instance.PlayBarrierHit(AudioManager.instance.barrierHit);
+                return;
+            }
+
+            // Anything else on Barrier layer/tag plays barrier hit sound
+            if (hit.collider.CompareTag("Barrier"))
+            {
+                AudioManager.instance.PlayBarrierHit(AudioManager.instance.barrierHit);
+            }
         }
 
-        _ammoCount--; // Reduce Ammo
+        _ammoCount--;
         UIManager.Instance.UpdateAmmo(_ammoCount);
     }
 
