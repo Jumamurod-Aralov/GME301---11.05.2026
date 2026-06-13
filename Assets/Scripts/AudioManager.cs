@@ -11,6 +11,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip aiDeath;
     public AudioClip backgroundMusic;
     public AudioClip aiCompleted;
+    public AudioClip explosionVFX;
 
     [Range(0f, 1f)] public float musicVolume = 0.3f;
     [Range(0f, 1f)] public float sfxVolume = 1f;
@@ -40,6 +41,7 @@ public class AudioManager : MonoBehaviour
     public void PlayWeaponFire(AudioClip clip) => PlaySound(clip, 1f);
     public void PlayBarrierHit(AudioClip clip) => PlaySound(clip, 0.6f);
     public void PlayAIDeath(AudioClip clip) => PlaySound(clip, 0.5f);
+    public void PlayExplosionVFX(AudioClip clip) => PlaySound(clip, 0.5f);
 
     public void PlayMusic(AudioClip clip)
     {

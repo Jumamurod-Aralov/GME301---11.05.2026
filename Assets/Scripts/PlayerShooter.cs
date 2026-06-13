@@ -13,7 +13,7 @@ public class PlayerShooter : MonoBehaviour
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
-        _shootLayer = LayerMask.GetMask("Enemy", "Barrier","Column");
+        _shootLayer = LayerMask.GetMask("Enemy", "Barrier","Column", "ExplosiveBarrel");
 
     }
 
@@ -39,6 +39,15 @@ public class PlayerShooter : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, _shootLayer))
         {
             Debug.Log($"Hit: {hit.collider.name} on layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+
+            // Check explosive barrel first
+            ExplosiveBarrel barrel = hit.collider.GetComponent<ExplosiveBarrel>();
+            if (barrel != null)
+            {
+                barrel.Explode();
+                AudioManager.instance.PlayExplosionVFX(AudioManager.instance.explosionVFX);
+                return;
+            }
 
             // Check enemy
             EnemyAI enemy = hit.collider.GetComponent<EnemyAI>();
