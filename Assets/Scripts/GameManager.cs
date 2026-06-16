@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     {
         _gameActive = false;
         Debug.Log("You Lost!");
-        UIManager.Instance.ShowGameOver(true);
+        UIManager.Instance.ShowGameOver(false);
         Time.timeScale = 0f; // Pause the game 
     }
 

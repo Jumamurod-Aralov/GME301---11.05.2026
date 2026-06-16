@@ -18,6 +18,9 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
+        // Reduce audio quality for WebGL
+        AudioSettings.outputSampleRate = 22050; // Lower from 44100
+
         if (instance == null)
             instance = this;
         else
